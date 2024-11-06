@@ -1,10 +1,11 @@
-package gemini
+package gemini;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.DoubleAdder;
 import java.util.stream.Collectors;
 
@@ -27,32 +28,36 @@ public class Google_Gemini_TemperatureProcessor {
                 String[] parts = line.split(";");
                 String station = parts[0];
                 double temperature = Double.parseDouble(parts[1]);
-                stationTemperatures.computeIfAbsent(station, ArrayList::new).add(temperature);
+                stationTemperatures.computeIfAbsent(station, k -> new ArrayList<>()).add(temperature);
             });
         }
 
         // Calculate statistics for each station in parallel
         Map<String, String> stationStats = stationTemperatures.entrySet().parallelStream()
                 .collect(Collectors.toMap(
-                        Entry::getKey,
+                        Map.Entry::getKey,
                         entry -> {
                             List<Double> temps = entry.getValue();
                             DoubleAdder sum = new DoubleAdder();
-                            double min = Double.MAX_VALUE;
-                            double max = Double.MIN_VALUE;
+                            AtomicReference<Double> min = new AtomicReference<>(Double.MAX_VALUE);
+                            AtomicReference<Double> max = new AtomicReference<>(Double.MIN_VALUE);
                             temps.forEach(t -> {
                                 sum.add(t);
-                                min = Math.min(min, t);
-                                max = Math.max(max, t);
+                                min.set(Math.min(min.get(), t));
+                                max.set(Math.max(max.get(), t));
                             });
                             double mean = sum.doubleValue() / temps.size();
                             return String.format("%.1f/%.1f/%.1f", min, mean, max);
                         }
                 ));
 
+
         // Print the results, sorted alphabetically by station name
-        System.out.println(stationStats.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (a, b) -> a, LinkedHashMap::new)));
+        Map<String, String> sortedStats = stationStats.entrySet().stream()
+                .sorted(Comparator.comparing(Map.Entry::getKey))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+        (a, b) -> a, LinkedHashMap::new));
+        System.out.println(sortedStats);
+
     }
 }
