@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/attempt2/codeium/codeium.iml" filepath="$PROJECT_DIR$/attempt2/codeium/codeium.iml" />
+      <module fileurl="file://$PROJECT_DIR$/attempt2/gemini/gemini.iml" filepath="$PROJECT_DIR$/attempt2/gemini/gemini.iml" />
+      <module fileurl="file://$PROJECT_DIR$/attempt2/ms-copilot/ms-copilot.iml" filepath="$PROJECT_DIR$/attempt2/ms-copilot/ms-copilot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/attempt1/results/results.iml" filepath="$PROJECT_DIR$/attempt1/results/results.iml" />
+    </modules>
+  </component>
+</project>
